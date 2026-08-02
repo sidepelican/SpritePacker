@@ -50,7 +50,10 @@ struct SpritePacker: AsyncParsableCommand {
                 input: inputURL,
                 output: outputURL
             )
-            print("Generated \(summary.atlasCount) atlas(es) and \(summary.imageCount) standalone texture(s) in \(outputURL.path)")
+            let message = AttributedString(
+                localized: "Generated ^[\(summary.atlasCount) atlas](inflect: true) and ^[\(summary.imageCount) standalone texture](inflect: true) in \(outputURL.path)"
+            )
+            print(String(message.characters))
         } catch {
             throw ValidationError(error.localizedDescription)
         }

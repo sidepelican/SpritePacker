@@ -50,7 +50,8 @@ struct SpritePackingPipeline {
                 input: pngURL,
                 name: name,
                 outputDirectory: output,
-                blockSize: blockSize
+                blockSize: blockSize,
+                yflip: true
             )
             try fileManager.removeItem(at: pngURL)
             atlasCount += 1
@@ -68,7 +69,8 @@ struct SpritePackingPipeline {
                 input: sourceURL,
                 name: name,
                 outputDirectory: output,
-                blockSize: blockSize
+                blockSize: blockSize,
+                yflip: false
             )
             imageCount += 1
         }
@@ -80,10 +82,11 @@ struct SpritePackingPipeline {
         input: URL,
         name: String,
         outputDirectory: URL,
-        blockSize: ASTCBlockSize
+        blockSize: ASTCBlockSize,
+        yflip: Bool
     ) async throws {
         let astcURL = outputDirectory.appendingPathComponent("\(name).astc")
-        try await encodeASTC(input: input, output: astcURL, blockSize: blockSize)
+        try await encodeASTC(input: input, output: astcURL, blockSize: blockSize, yflip: yflip)
         guard mode.usesCCZ else { return }
 
         let cczURL = astcURL.appendingPathExtension("ccz")
@@ -91,17 +94,25 @@ struct SpritePackingPipeline {
         try fileManager.removeItem(at: astcURL)
     }
 
-    private func encodeASTC(input: URL, output: URL, blockSize: ASTCBlockSize) async throws {
+    private func encodeASTC(
+        input: URL,
+        output: URL,
+        blockSize: ASTCBlockSize,
+        yflip: Bool
+    ) async throws {
+        var arguments = [
+            "-cl",
+            input.path,
+            output.path,
+            blockSize.rawValue,
+            "-\(mode.astcencQuality)",
+        ]
+        if yflip {
+            arguments.append("-yflip")
+        }
         let result = try await Subprocess.run(
             .name("astcenc"),
-            arguments: [
-                "-cl",
-                input.path,
-                output.path,
-                blockSize.rawValue,
-                "-\(mode.astcencQuality)",
-                "-yflip",
-            ],
+            arguments: Arguments(arguments),
             output: .string(limit: 1_048_576),
             error: .string(limit: 1_048_576)
         )

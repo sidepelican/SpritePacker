@@ -61,12 +61,16 @@ swift build -c release
 .build/release/SpritePacker ./sprites
 .build/release/SpritePacker -o ./generated ./sprites
 .build/release/SpritePacker --mode preview ./sprites
+.build/release/SpritePacker --filter characters ./sprites
 ```
 
 出力先を省略すると `<input>/output` を使います。
 アトラスごとにテクスチャとcocos2d-xフォーマットの`.plist` を生成します。
 
 `--mode`（短縮形 `-m`）を省略すると `release` になります。
+
+`--filter`を指定すると、`sprite.json`の`atlases`または`images`のキーに
+指定文字列を含むリソースだけを変換します。判定では大文字と小文字を区別します。
 
 | モード | `astcenc` 品質設定 | 出力 | 用途 |
 | --- | --- | --- | --- |

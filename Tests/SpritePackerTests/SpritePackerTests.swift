@@ -16,6 +16,31 @@ import Testing
     #expect(configuration.images == ["logo.png": .`4x4`])
 }
 
+@Test func filtersAtlasAndImageKeysUsingStringContains() throws {
+    let configuration = SpriteConfiguration(
+        atlases: [
+            "characters/player": .`6x6`,
+            "backgrounds/forest": .`4x4`,
+        ],
+        images: [
+            "characters/icon.png": .`4x4`,
+            "logo.png": .`4x4`,
+        ]
+    )
+
+    do {
+        let filtered = configuration.filtered(containing: "characters/")
+        #expect(filtered.atlases == ["characters/player": .`6x6`])
+        #expect(filtered.images == ["characters/icon.png": .`4x4`])
+    }
+    do {
+        let filtered = configuration.filtered(containing: "logo")
+        #expect(filtered.atlases == [:])
+        #expect(filtered.images == ["logo.png": .`4x4`])
+    }
+    #expect(configuration.filtered(containing: nil) == configuration)
+}
+
 @Test func cczEncoderWritesCocos2dCompatibleHeaderAndZlibPayload() throws {
     let original = Data(repeating: 0x5A, count: 4_096)
     let ccz = try CCZEncoder().encode(original)

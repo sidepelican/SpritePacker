@@ -21,6 +21,14 @@ struct SpriteConfiguration: Decodable, Equatable {
             throw SpritePackerError.invalidConfiguration("\(error)")
         }
     }
+
+    func filtered(containing filter: String?) -> Self {
+        guard let filter else { return self }
+        return Self(
+            atlases: atlases?.filter { $0.key.contains(filter) },
+            images: images?.filter { $0.key.contains(filter) }
+        )
+    }
 }
 
 enum SpritePackerError: LocalizedError {

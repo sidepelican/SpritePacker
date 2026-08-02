@@ -9,12 +9,16 @@ struct PipelineSummary: Equatable {
 struct SpritePackingPipeline {
     private var fileManager = FileManager.default
     var mode: SpritePackerMode
-    init(mode: SpritePackerMode) {
+    var filter: String?
+
+    init(mode: SpritePackerMode, filter: String? = nil) {
         self.mode = mode
+        self.filter = filter
     }
 
     func run(input: URL, output: URL) async throws -> PipelineSummary {
         let config = try SpriteConfiguration.load(from: input)
+            .filtered(containing: filter)
         try fileManager.createDirectory(at: output, withIntermediateDirectories: true)
         
         var atlasCount = 0

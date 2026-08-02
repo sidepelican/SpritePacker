@@ -36,6 +36,9 @@ struct SpritePacker: AsyncParsableCommand {
     )
     var mode: SpritePackerMode = .release
 
+    @Option(help: "Only process atlas or image keys containing this string.")
+    var filter: String?
+
     mutating func run() async throws {
         let inputURL = URL(fileURLWithPath: inputDirectory).standardizedFileURL
         let outputURL = outputDirectory.map {
@@ -43,7 +46,7 @@ struct SpritePacker: AsyncParsableCommand {
         } ?? inputURL.appendingPathComponent("output", isDirectory: true)
 
         do {
-            let summary = try await SpritePackingPipeline(mode: mode).run(
+            let summary = try await SpritePackingPipeline(mode: mode, filter: filter).run(
                 input: inputURL,
                 output: outputURL
             )

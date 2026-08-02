@@ -104,7 +104,7 @@ struct SpritePackingPipeline {
             "-cl",
             input.path,
             output.path,
-            blockSize.rawValue,
+            blockSize.description,
             "-\(mode.astcencQuality)",
         ]
         if yflip {
